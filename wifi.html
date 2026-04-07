@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+  <title>CAM-S WIFI | Fast & Reliable Internet</title>
+  <!-- Font Awesome 6 (Free Icons) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <!-- Google Fonts: modern, clean sans -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background: #f4f7fc;
+      font-family: 'Inter', sans-serif;
+      padding: 24px 16px 48px;
+      color: #1a2c3e;
+    }
+
+    /* main container */
+    .portal-container {
+      max-width: 1280px;
+      margin: 0 auto;
+    }
+
+    /* two-column layout for desktop, stacked on mobile */
+    .dashboard {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 28px;
+      margin-top: 20px;
+    }
+
+    /* LEFT COLUMN: sign in + voucher panel */
+    .login-panel {
+      flex: 1.2;
+      min-width: 280px;
+      background: white;
+      border-radius: 32px;
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.05);
+      overflow: hidden;
+      padding: 28px 24px 36px;
+      transition: all 0.2s ease;
+    }
+
+    /* RIGHT COLUMN: package grid */
+    .packages-panel {
+      flex: 2;
+      min-width: 300px;
+    }
+
+    /* branding header */
+    .brand-header {
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .brand-header h1 {
+      font-size: 28px;
+      font-weight: 800;
+      background: linear-gradient(135deg, #0b3b5f, #1b6b8f);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: -0.3px;
+    }
+    .brand-header .tagline {
+      font-size: 14px;
+      color: #2c6e9e;
+      background: #eef3fa;
+      display: inline-block;
+      padding: 6px 16px;
+      border-radius: 40px;
+      margin-top: 8px;
+      font-weight: 500;
+    }
+    .wifi-login-badge {
+      background: #eef2f5;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 16px;
+      border-radius: 60px;
+      font-size: 13px;
+      font-weight: 600;
+      color: #0f4c6b;
+      margin-bottom: 20px;
+    }
+
+    /* voucher section */
+    .voucher-area {
+      background: #f9fafc;
+      border-radius: 28px;
+      padding: 20px;
+      margin: 16px 0 20px;
+      border: 1px solid #e2edf2;
+    }
+    .voucher-label {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 12px;
+      color: #1f4e6e;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .input-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 18px;
+    }
+    .input-group input {
+      flex: 2;
+      padding: 14px 18px;
+      border-radius: 60px;
+      border: 1.5px solid #d4e2ec;
+      font-size: 15px;
+      background: white;
+      font-family: 'Inter', monospace;
+      transition: 0.2s;
+    }
+    .input-group input:focus {
+      outline: none;
+      border-color: #1f8cad;
+      box-shadow: 0 0 0 3px rgba(31,140,173,0.2);
+    }
+    .btn-login {
+      background: #0f6b4c;
+      color: white;
+      border: none;
+      padding: 0 28px;
+      border-radius: 60px;
+      font-weight: 700;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.2s;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(95deg, #0c5e44, #138a62);
+    }
+    .btn-login:hover {
+      background: linear-gradient(95deg, #0a4f3a, #0f7452);
+      transform: scale(0.97);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+    .demo-note {
+      font-size: 12px;
+      background: #eef2fa;
+      border-radius: 20px;
+      padding: 8px 12px;
+      color: #2c5a74;
+      display: inline-block;
+    }
+
+    /* payment methods row */
+    .payment-row {
+      margin: 28px 0 20px;
+      border-top: 1px dashed #cbdde6;
+      padding-top: 22px;
+    }
+    .payment-title {
+      font-weight: 600;
+      margin-bottom: 12px;
+      font-size: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .payment-icons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 18px;
+      align-items: center;
+    }
+    .payment-badge {
+      background: #f2f6f9;
+      padding: 8px 18px;
+      border-radius: 100px;
+      font-weight: 600;
+      font-size: 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+    }
+    .payment-badge i {
+      font-size: 18px;
+    }
+
+    /* CONTACT CARD */
+    .contact-card {
+      background: #eef3f8;
+      border-radius: 24px;
+      padding: 18px 20px;
+      margin-top: 20px;
+    }
+    .contact-title {
+      font-weight: 700;
+      margin-bottom: 12px;
+      font-size: 15px;
+    }
+    .contact-details p {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin: 10px 0;
+      font-size: 14px;
+      flex-wrap: wrap;
+    }
+    .contact-details a {
+      text-decoration: none;
+      color: #1f6e8c;
+      font-weight: 500;
+    }
+    .whatsapp-highlight {
+      background: #25D36620;
+      border-radius: 40px;
+      padding: 6px 12px;
+    }
+    .footer-note {
+      font-size: 11px;
+      text-align: center;
+      margin-top: 18px;
+      color: #5f7f95;
+      border-top: 1px solid #cde1ec;
+      padding-top: 18px;
+    }
+
+    /* PACKAGE GRID */
+    .packages-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 20px;
+      margin-bottom: 32px;
+    }
+    .package-card {
+      background: white;
+      border-radius: 28px;
+      padding: 20px 16px;
+      text-align: center;
+      transition: all 0.2s ease;
+      box-shadow: 0 6px 14px rgba(0, 0, 0, 0.03);
+      border: 1px solid #e2edf2;
+      cursor: pointer;
+    }
+    .package-card:hover {
+      transform: translateY(-4px);
+      border-color: #bbdef0;
+      box-shadow: 0 18px 30px -12px rgba(0, 0, 0, 0.12);
+    }
+    .package-name {
+      font-size: 20px;
+      font-weight: 800;
+      background: linear-gradient(145deg, #124263, #1f6b8a);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+    .package-duration {
+      font-size: 14px;
+      color: #4b6b82;
+      margin: 8px 0;
+      font-weight: 500;
+    }
+    .package-price {
+      font-size: 28px;
+      font-weight: 800;
+      color: #1b5e3f;
+      margin: 12px 0;
+    }
+    .package-price small {
+      font-size: 13px;
+      font-weight: 500;
+      color: #5f7e6a;
+    }
+    .buy-btn {
+      background: #f0f4f8;
+      border: none;
+      padding: 10px 0;
+      width: 100%;
+      border-radius: 40px;
+      font-weight: 700;
+      font-size: 14px;
+      color: #0f5c44;
+      transition: 0.2s;
+      margin-top: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .buy-btn:hover {
+      background: #0c5e44;
+      color: white;
+    }
+    /* selected package highlight */
+    .selected-package {
+      border: 2px solid #0f8b6b;
+      background: #f6fef9;
+      box-shadow: 0 10px 20px rgba(15,139,107,0.15);
+    }
+
+    /* toast & modals */
+    .toast-message {
+      position: fixed;
+      bottom: 28px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1e2f3c;
+      color: white;
+      padding: 12px 24px;
+      border-radius: 50px;
+      font-size: 14px;
+      z-index: 1000;
+      box-shadow: 0 6px 14px black/0.2;
+      backdrop-filter: blur(4px);
+      font-weight: 500;
+      pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1100;
+      backdrop-filter: blur(3px);
+    }
+    .modal-card {
+      background: white;
+      max-width: 340px;
+      width: 90%;
+      border-radius: 40px;
+      padding: 28px 22px;
+      text-align: center;
+      animation: fadeUp 0.2s ease;
+    }
+    .modal-card h3 {
+      font-size: 24px;
+      margin-bottom: 12px;
+    }
+    .modal-card button {
+      margin-top: 24px;
+      background: #0f6b4c;
+      border: none;
+      padding: 12px 28px;
+      border-radius: 60px;
+      color: white;
+      font-weight: bold;
+    }
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px);}
+      to { opacity: 1; transform: translateY(0);}
+    }
+
+    @media (max-width: 780px) {
+      body { padding: 16px; }
+      .login-panel { padding: 20px; }
+    }
+    hr {
+      margin: 12px 0;
+      border-color: #e0edf3;
+    }
+  </style>
+</head>
+<body>
+<div class="portal-container">
+  <!-- header section similar to image: Sign in to CAM-S WIFI + wifi.login -->
+  <div class="brand-header">
+    <div style="display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap;">
+      <h1><i class="fas fa-wifi"></i> CAM-S WIFI</h1>
+      <span class="wifi-login-badge"><i class="fas fa-sign-in-alt"></i> wifi.login</span>
+    </div>
+    <div class="tagline">Fast, Reliable, Royal unlimited Connection</div>
+  </div>
+
+  <div class="dashboard">
+    <!-- LEFT COLUMN: Sign in & voucher + payment & contact (exactly like first image + contact from second) -->
+    <div class="login-panel">
+      <div class="voucher-area">
+        <div class="voucher-label">
+          <i class="fas fa-ticket-alt"></i> Voucher code or transaction ID
+        </div>
+        <div class="input-group">
+          <input type="text" id="voucherCode" placeholder="e.g., CS-XXXX-1234" autocomplete="off">
+          <button class="btn-login" id="loginVoucherBtn"><i class="fas fa-arrow-right-to-bracket"></i> Login</button>
+        </div>
+        <div class="demo-note">
+          <i class="fas fa-info-circle"></i> Demo: use code "DEMO123" to simulate login
+        </div>
+      </div>
+
+      <!-- Accepted Payment Methods (exactly as images) -->
+      <div class="payment-row">
+        <div class="payment-title"><i class="fas fa-credit-card"></i> Accepted Payment Methods</div>
+        <div class="payment-icons">
+          <span class="payment-badge"><i class="fas fa-money-bill-wave"></i> CASH</span>
+          <span class="payment-badge"><i class="fas fa-mobile-alt"></i> airtel money</span>
+          <span class="payment-badge"><i class="fas fa-mobile-alt"></i> MTN Mobile Money</span>
+        </div>
+      </div>
+
+      <!-- Contact Us area exactly from second image: phone, whatsapp, email -->
+      <div class="contact-card">
+        <div class="contact-title"><i class="fas fa-headset"></i> Contact Us</div>
+        <div class="contact-details">
+          <p><i class="fas fa-phone-alt"></i> <a href="tel:0743658470">0743658470</a> &nbsp;|&nbsp; <a href="tel:0787215216">0743658470</a></p>
+          <p><i class="fab fa-whatsapp whatsapp-highlight"></i> WhatsApp: <a href="https://wa.me/2762816655?text=WiFi%20Help">0743658470/a></p>
+          <p><i class="fas fa-envelope"></i> <a href="mailto:chrisjonathan197@gmail.com">chrisjonathan197@gmail.com</a></p>
+        </div>
+        <div style="font-size:12px; margin-top: 12px; background:#ffffff90; border-radius: 20px; padding: 8px;">
+          ⚡ Failure to connect? Code not received? Money deducted?<br> 
+          Call helplines immediately. Thank Y’All!
+        </div>
+      </div>
+      <div class="footer-note">
+        Captive Portal v1.2.6 &nbsp;|&nbsp; Powered by D Link Uganda <br>
+        © 2026 Wifi Uganda — All Rights Reserved.
+      </div>
+    </div>
+
+    <!-- RIGHT PANEL: All WiFi Packages + BUY NOW -->
+    <div class="packages-panel">
+      <div style="margin-bottom: 20px;">
+        <h2 style="font-size: 22px; font-weight: 700;"><i class="fas fa-tachometer-alt"></i> Choose a WiFi Package</h2>
+        <p style="color: #4b6f88;">Select your plan & proceed with secure payment</p>
+      </div>
+      <div class="packages-grid" id="packagesGrid">
+        <!-- package data will be rendered from JS, matching exactly the image plans -->
+      </div>
+      <!-- small hint: selected package -->
+      <div id="selectedPackageHint" style="font-size:13px; text-align:center; margin-top: 8px; color:#2c7a5a;"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---------- PACKAGES DATA exactly as in images (first & second image combined) ----------
+  const packagesData = [
+    { name: "CAM-S QUICK", duration: "3 Hours", price: 500, priceLabel: "UGX 500", daysLabel: "3 Hours" },
+    { name: "CAM-S HALF DAY", duration: "12 Hours", price: 800, priceLabel: "UGX 800", daysLabel: "12 Hours" },
+    { name: "CAM-S 1-DAY", duration: "24 hours", price: 1000, priceLabel: "UGX 1,000", daysLabel: "24 hours" },
+    { name: "CAM-S MINI", duration: "3 Days", price: 2000, priceLabel: "UGX 2,000", daysLabel: "3 Days" },
+    { name: "CAM-S 9 DAYS", duration: "9 Days", price: 6000, priceLabel: "UGX 6,000", daysLabel: "9 Days" },
+    { name: "CAM-S 2-WEEKS", duration: "14 Days", price: 9000, priceLabel: "UGX 9,000", daysLabel: "14 Days" },
+    { name: "CAM-S MONTHLY", duration: "30 Days", price: 20000, priceLabel: "UGX 20,000", daysLabel: "30 Days" }
+  ];
+  //__________BACK END (
+
+  let selectedPackage = null;   // store selected package object
+
+  // Helper: show toast message
+  function showToast(message, isError = false) {
+    const existingToast = document.querySelector('.toast-message');
+    if(existingToast) existingToast.remove();
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.style.backgroundColor = isError ? '#b13e3e' : '#1f6e4a';
+    toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+      toast.style.opacity = '0';
+      setTimeout(() => toast.remove(), 400);
+    }, 3000);
+  }
+
+  // modal popup for payment confirmation / voucher success
+  function showModal(title, message, onConfirm = null) {
+    let modalDiv = document.createElement('div');
+    modalDiv.className = 'modal-overlay';
+    modalDiv.innerHTML = `
+      <div class="modal-card">
+        <i class="fas fa-wifi" style="font-size: 40px; color: #138a62;"></i>
+        <h3>${title}</h3>
+        <p style="margin: 12px 0;">${message}</p>
+        <button id="modalOkBtn">OK</button>
+      </div>
+    `;
+    document.body.appendChild(modalDiv);
+    const okBtn = modalDiv.querySelector('#modalOkBtn');
+    okBtn.addEventListener('click', () => {
+      if(onConfirm) onConfirm();
+      modalDiv.remove();
+    });
+  }
+
+  // simulate purchase & payment (mobile money / cash flow)
+  function initiatePurchase(pkg) {
+    if(!pkg) {
+      showToast("Please select a WiFi package first", true);
+      return;
+    }
+    // show payment options dialog (since payment methods are accepted, we simulate selection)
+    // For realistic demo, we'll simulate a payment confirmation with MTN or Airtel Money.
+    showModal(
+      "Confirm Purchase",
+      `You are about to buy ${pkg.name} (${pkg.duration}) for ${pkg.priceLabel}. \nPayment via Mobile Money or Cash will be processed. Click OK to simulate successful connection.`,
+      () => {
+        // success simulation - grant access (in real captive portal would redirect)
+        showToast(`✅ Success! ${pkg.name} activated. Enjoy fast unlimited WiFi.`, false);
+        // optional: set a localStorage flag
+        localStorage.setItem('kzone_active', 'true');
+        localStorage.setItem('active_package', pkg.name);
+        // In real environment, you'd redirect to success or internet
+        // We also trigger a friendly note
+        setTimeout(() => {
+          showModal("Connection Active", `You are now connected to CAM-S WIFI. Plan: ${pkg.name}. Thank you for choosing CAM-S!`, null);
+        }, 500);
+      }
+    );
+  }
+
+  // handle voucher login (demo)
+  function handleVoucherLogin() {
+    const voucherInput = document.getElementById('voucherCode').value.trim();
+    if(voucherInput === "") {
+      showToast("Please enter a voucher code or transaction ID", true);
+      return;
+    }
+    // demo condition: any code that includes DEMO or length > 3 works, but show realistic
+    if(voucherInput === "DEMO123" || voucherInput.toLowerCase().includes("demo") || voucherInput.length >= 5) {
+      showModal("Voucher Accepted", `Welcome! Your voucher ${voucherInput} has been redeemed. You now have full CAM-S access for 24 hours (demo mode).`, () => {
+        showToast("Internet access granted! Enjoy browsing.", false);
+        localStorage.setItem('cam-s_active', 'true');
+        localStorage.setItem('voucher_login', voucherInput);
+      });
+    } else {
+      showToast("Invalid voucher or transaction ID. Please check and try again. (Demo: DEMO123)", true);
+    }
+  }
+
+  // render package cards
+  function renderPackages() {
+    const container = document.getElementById('packagesGrid');
+    if(!container) return;
+    container.innerHTML = '';
+    packagesData.forEach(pkg => {
+      const card = document.createElement('div');
+      card.className = 'package-card';
+      if(selectedPackage && selectedPackage.name === pkg.name) {
+        card.classList.add('selected-package');
+      }
+      card.innerHTML = `
+        <div class="package-name">${pkg.name}</div>
+        <div class="package-duration"><i class="far fa-clock"></i> ${pkg.duration}</div>
+        <div class="package-price">${pkg.priceLabel}</div>
+        <button class="buy-btn" data-pkg-name="${pkg.name}"><i class="fas fa-shopping-cart"></i> BUY NOW</button>
+      `;
+      // clicking on card (except button) also selects package
+      card.addEventListener('click', (e) => {
+        if(e.target.classList.contains('buy-btn')) return;
+        selectedPackage = pkg;
+        renderPackages(); // re-render to show highlight
+        document.getElementById('selectedPackageHint').innerHTML = `✔️ Selected: ${pkg.name} - ${pkg.priceLabel} (click BUY NOW to pay)`;
+      });
+      const buyBtn = card.querySelector('.buy-btn');
+      buyBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectedPackage = pkg;
+        renderPackages();   // update selected visual
+        document.getElementById('selectedPackageHint').innerHTML = `✔️ Selected: ${pkg.name} - ${pkg.priceLabel}`;
+        initiatePurchase(pkg);
+      });
+      container.appendChild(card);
+    });
+  }
+
+  // Additional: ensure BUY NOW from second image also matches each plan.
+  // Add direct integration for hover/effect
+
+  // function to simulate first-load greeting
+  function checkExistingSession() {
+    const active = localStorage.getItem('Cam-s_active');
+    if(active === 'true') {
+      const pkgName = localStorage.getItem('active_package') || 'previous plan';
+      showToast(`Welcome back! You have an active ${pkgName} session.`, false);
+    }
+  }
+
+  // set up event listeners and default voucher actions
+  document.addEventListener('DOMContentLoaded', () => {
+    renderPackages();
+    checkExistingSession();
+
+    const loginBtn = document.getElementById('loginVoucherBtn');
+    if(loginBtn) loginBtn.addEventListener('click', handleVoucherLogin);
+    const voucherInput = document.getElementById('voucherCode');
+    if(voucherInput) {
+      voucherInput.addEventListener('keypress', (e) => {
+        if(e.key === 'Enter') handleVoucherLogin();
+      });
+    }
+
+    // For demonstration, show that cash & mobile money are available (already displayed)
+    // Add extra interactive note: clicking on payment methods shows info
+    const paymentBadges = document.querySelectorAll('.payment-badge');
+    paymentBadges.forEach(badge => {
+      badge.style.cursor = 'pointer';
+      badge.addEventListener('click', () => {
+        showToast(`Payment via ${badge.innerText.trim()} is accepted at the counter or via mobile.`, false);
+      });
+    });
+
+    // set initial hint
+    document.getElementById('selectedPackageHint').innerHTML = '✨ Select a package or use voucher code above.';
+  });
+
+  // also add manual style for telephone/email links
+  // fully responsive and respects both images: includes voucher+packages+contact details and payment methods
+  // also includes the footer "Captive Portal v1.2.6" and copyright exactly like second image
+</script>
+</body>
+</html>

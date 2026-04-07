@@ -1,0 +1,692 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Airtel & MTN | WiFi Auto-Connect after Payment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: radial-gradient(circle at 10% 30%, #101f2c, #0a141c);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        /* main glassmorphic card */
+        .wifi-card {
+            max-width: 600px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(0px);
+            border-radius: 2.5rem;
+            box-shadow: 0 30px 50px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.2);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+
+        /* header with connection status */
+        .connection-header {
+            background: linear-gradient(105deg, #0a2b38 0%, #1b4f6e 100%);
+            padding: 1.5rem 2rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .wifi-status-area {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .wifi-icon-big {
+            font-size: 3.2rem;
+            color: #ffde9c;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+
+        .status-badge {
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(8px);
+            padding: 0.3rem 1rem;
+            border-radius: 60px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #eef4ff;
+            letter-spacing: 0.5px;
+        }
+
+        .status-badge i {
+            margin-right: 6px;
+            font-size: 0.7rem;
+        }
+
+        .connection-status-text {
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 4px;
+        }
+
+        /* main payment area */
+        .pay-section {
+            padding: 2rem 1.8rem 1.8rem;
+        }
+
+        .plan-selector {
+            margin-bottom: 1.8rem;
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #1e3a4b;
+            margin-bottom: 0.9rem;
+            font-size: 0.9rem;
+        }
+
+        .plan-grid {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .plan-item {
+            flex: 1;
+            background: #f8fafd;
+            border: 1.5px solid #e2edf2;
+            border-radius: 1.2rem;
+            padding: 0.8rem 0.4rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .plan-item.selected {
+            background: #e9f4f0;
+            border-color: #2c7a5e;
+            box-shadow: 0 6px 12px rgba(44, 122, 94, 0.12);
+        }
+
+        .plan-price {
+            font-weight: 800;
+            font-size: 1.35rem;
+            color: #1f4e6a;
+        }
+
+        .plan-name {
+            font-size: 0.7rem;
+            font-weight: 500;
+            color: #547b91;
+        }
+
+        /* operator cards */
+        .operator-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .operator-row {
+            display: flex;
+            gap: 1rem;
+            margin-top: 0.5rem;
+        }
+
+        .op-card {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: #ffffff;
+            border: 2px solid #e0ecf3;
+            border-radius: 1.2rem;
+            padding: 0.9rem 0.3rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .op-card i:first-child {
+            font-size: 1.8rem;
+        }
+
+        .op-card span {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .op-card.selected[data-op="airtel"] {
+            border-color: #e30a17;
+            background: #fff4f4;
+        }
+
+        .op-card.selected[data-op="mtn"] {
+            border-color: #f5b81b;
+            background: #fffae9;
+        }
+
+        /* phone input */
+        .phone-input-area {
+            margin-bottom: 1.8rem;
+        }
+
+        .input-wrapper {
+            display: flex;
+            align-items: center;
+            background: #f1f5f9;
+            border-radius: 1.2rem;
+            border: 1px solid #dce5ec;
+            padding: 0.2rem 0.2rem 0.2rem 1rem;
+        }
+
+        .prefix {
+            font-weight: 700;
+            background: #e4ebf2;
+            padding: 0.4rem 0.9rem;
+            border-radius: 2rem;
+            font-size: 0.85rem;
+            color: #1f5e7e;
+        }
+
+        .input-wrapper input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 0.9rem 0.7rem;
+            font-size: 1rem;
+            font-weight: 500;
+            outline: none;
+            font-family: 'Inter', monospace;
+        }
+
+        .helper-text {
+            font-size: 0.7rem;
+            color: #6b8da0;
+            margin-top: 8px;
+            margin-left: 6px;
+        }
+
+        /* pay button */
+        .pay-button {
+            width: 100%;
+            background: linear-gradient(95deg, #0f3b4c, #1b6b50);
+            border: none;
+            padding: 1rem;
+            font-weight: 800;
+            font-size: 1rem;
+            color: white;
+            border-radius: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-top: 0.5rem;
+            box-shadow: 0 8px 18px rgba(0, 0, 0, 0.1);
+        }
+
+        .pay-button:active {
+            transform: scale(0.97);
+        }
+
+        /* connection success overlay & animation */
+        .auto-connect-pulse {
+            transition: all 0.3s ease;
+        }
+
+        /* toast */
+        .toast-notify {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1e2f3cee;
+            backdrop-filter: blur(12px);
+            color: white;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            z-index: 2000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.25s;
+            font-size: 0.9rem;
+            pointer-events: none;
+            white-space: nowrap;
+        }
+
+        .toast-notify.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .connection-success-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(6, 35, 45, 0.85);
+            backdrop-filter: blur(8px);
+            z-index: 1500;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            visibility: hidden;
+            opacity: 0;
+            transition: 0.2s;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .connection-success-animation.active {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .wifi-pulse {
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            padding: 1.5rem;
+            animation: pulse 1.2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.9); opacity: 0.6; }
+            100% { transform: scale(1.3); opacity: 0; }
+        }
+
+        .success-text {
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+            background: #00000066;
+            padding: 0.5rem 1.5rem;
+            border-radius: 50px;
+        }
+
+        /* footer */
+        .footer-note {
+            background: #f3f9fe;
+            padding: 0.9rem;
+            text-align: center;
+            font-size: 0.7rem;
+            color: #537e92;
+            border-top: 1px solid #e2edf2;
+            display: flex;
+            justify-content: center;
+            gap: 18px;
+        }
+
+        @media (max-width: 500px) {
+            .plan-price { font-size: 1rem; }
+            .op-card span { font-size: 0.85rem; }
+            .connection-status-text { font-size: 1rem; }
+            .toast-notify { white-space: normal; text-align: center; width: 90%; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="wifi-card">
+    <div class="connection-header">
+        <div class="wifi-status-area">
+            <i class="fas fa-wifi wifi-icon-big"></i>
+            <div class="status-badge" id="connectionBadge">
+                <i class="fas fa-shield-alt"></i> WiFi Gateway
+            </div>
+            <div class="connection-status-text" id="connectionStatusText">
+                <i class="fas fa-circle-notch fa-spin"></i> <span id="connStateLabel">Not Connected</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="pay-section">
+        <!-- WiFi Plans -->
+        <div class="plan-selector">
+            <div class="section-title"><i class="fas fa-tachometer-alt"></i> Select WiFi Plan</div>
+            <div class="plan-grid" id="planGrid"></div>
+        </div>
+
+        <!-- Airtel & MTN Operators -->
+        <div class="operator-group">
+            <div class="section-title"><i class="fas fa-mobile-alt"></i> Mobile Money Operator</div>
+            <div class="operator-row" id="operatorRow">
+                <div class="op-card" data-op="airtel" id="airtelOp">
+                    <i class="fas fa-circle" style="color:#E30A17"></i>
+                    <span>Airtel Money</span>
+                </div>
+                <div class="op-card" data-op="mtn" id="mtnOp">
+                    <i class="fas fa-circle" style="color:#F5B81B"></i>
+                    <span>MTN MoMo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phone Number -->
+        <div class="phone-input-area">
+            <div class="section-title"><i class="fas fa-phone"></i> Mobile Money Number</div>
+            <div class="input-wrapper">
+                <span class="prefix">+256</span>
+                <input type="tel" id="mobileNumber" placeholder="7X XXX XXXX" autocomplete="off">
+            </div>
+            <div class="helper-text"><i class="fas fa-info-circle"></i> Enter registered mobile money number</div>
+        </div>
+
+        <!-- Pay & Connect Button -->
+        <button class="pay-button" id="payAndConnectBtn">
+            <i class="fas fa-bolt"></i> Pay & Auto-Connect WiFi
+            <i class="fas fa-wifi"></i>
+        </button>
+    </div>
+
+    <div class="footer-note">
+        <span><i class="fas fa-check-circle"></i> Instant activation</span>
+        <span><i class="fas fa-sync-alt"></i> Auto-connect after payment</span>
+        <span><i class="fas fa-lock"></i> Secure transaction</span>
+    </div>
+</div>
+
+<!-- Toast message -->
+<div id="globalToast" class="toast-notify">
+    <i class="fas fa-circle-info"></i>
+    <span id="toastMsg">Processing...</span>
+</div>
+
+<!-- Fullscreen connection animation overlay -->
+<div id="connectionOverlay" class="connection-success-animation">
+    <div class="wifi-pulse">
+        <i class="fas fa-wifi" style="font-size: 4rem; color: white;"></i>
+    </div>
+    <div class="success-text" id="overlayText">Connecting...</div>
+</div>
+
+<script>
+    (function() {
+        // ---------- DATA ----------
+        const plans = [
+            { id: 'flex', name: 'Daily Surf', price: 2500, data: '3GB / 24h' },
+            { id: 'weekly', name: 'Weekly Stream', price: 10000, data: '15GB / 7d' },
+            { id: 'monthly', name: 'Unlimited Pro', price: 35000, data: 'Unlimited / 30d' }
+        ];
+
+        // state
+        let selectedPlanId = 'flex';
+        let selectedOperator = null;      // 'airtel' or 'mtn'
+        let isConnected = false;           // wifi connection state
+        let paymentInProgress = false;
+
+        // DOM elements
+        const planGrid = document.getElementById('planGrid');
+        const airtelOp = document.getElementById('airtelOp');
+        const mtnOp = document.getElementById('mtnOp');
+        const mobileInput = document.getElementById('mobileNumber');
+        const payBtn = document.getElementById('payAndConnectBtn');
+        const connStateSpan = document.getElementById('connStateLabel');
+        const connectionBadge = document.getElementById('connectionBadge');
+        const connectionOverlay = document.getElementById('connectionOverlay');
+        const overlayTextSpan = document.getElementById('overlayText');
+        const toastEl = document.getElementById('globalToast');
+        const toastMsgSpan = document.getElementById('toastMsg');
+
+        // Helper toast
+        function showToast(message, isError = false) {
+            toastMsgSpan.innerText = message;
+            toastEl.classList.add('show');
+            const iconEl = toastEl.querySelector('i:first-child');
+            if (isError) {
+                iconEl.className = 'fas fa-exclamation-triangle';
+                toastEl.style.background = "#b13e3ee6";
+            } else {
+                iconEl.className = 'fas fa-check-circle';
+                toastEl.style.background = "#1e2f3cee";
+            }
+            setTimeout(() => {
+                toastEl.classList.remove('show');
+                setTimeout(() => {
+                    if (!toastEl.classList.contains('show')) {
+                        iconEl.className = 'fas fa-circle-info';
+                        toastEl.style.background = "#1e2f3cee";
+                    }
+                }, 200);
+            }, 3200);
+        }
+
+        // update connection UI (manual or after payment)
+        function updateConnectionUI(connected) {
+            if (connected) {
+                connStateSpan.innerHTML = '<i class="fas fa-check-circle" style="color:#9bffb0;"></i> WiFi Connected';
+                connectionBadge.innerHTML = '<i class="fas fa-wifi"></i> Active & Online';
+                connectionBadge.style.background = "#2c9e6be0";
+                // also change header gradient hint
+                document.querySelector('.connection-header').style.background = "linear-gradient(105deg, #16634b, #1f8562)";
+                // show small success effect in status area
+            } else {
+                connStateSpan.innerHTML = '<i class="fas fa-times-circle"></i> Not Connected';
+                connectionBadge.innerHTML = '<i class="fas fa-shield-alt"></i> WiFi Gateway';
+                connectionBadge.style.background = "rgba(0, 0, 0, 0.5)";
+                document.querySelector('.connection-header').style.background = "linear-gradient(105deg, #0a2b38 0%, #1b4f6e 100%)";
+            }
+        }
+
+        // Simulate WiFi Auto-Connect AFTER payment approval (core logic)
+        function activateWiFiConnection(planName, operatorName, phone) {
+            return new Promise((resolve) => {
+                // show fullscreen animation overlay for auto-connect magic
+                connectionOverlay.classList.add('active');
+                overlayTextSpan.innerHTML = `✓ Payment approved!<br>Auto-connecting to WiFi...`;
+                // simulate network handshake & provisioning
+                setTimeout(() => {
+                    isConnected = true;
+                    updateConnectionUI(true);
+                    // close overlay after showing success
+                    overlayTextSpan.innerHTML = `🎉 Connected!<br>Enjoy ${planName} WiFi`;
+                    setTimeout(() => {
+                        connectionOverlay.classList.remove('active');
+                        resolve(true);
+                    }, 1500);
+                }, 1800);
+            });
+        }
+
+        // Validate phone (uganda style)
+        function validatePhone(raw) {
+            let cleaned = raw.trim().replace(/\s+/g, '');
+            if (cleaned.startsWith('0')) cleaned = cleaned.substring(1);
+            if (cleaned.startsWith('256')) cleaned = cleaned.substring(3);
+            const phoneRegex = /^[7][0-9]{8}$/;
+            if (phoneRegex.test(cleaned)) return cleaned;
+            return null;
+        }
+
+        // get selected plan object
+        function getCurrentPlan() {
+            return plans.find(p => p.id === selectedPlanId) || plans[0];
+        }
+
+        // main payment + auto connect flow
+        async function handlePaymentAndConnect() {
+            // prevent double payment / while connecting
+            if (paymentInProgress) {
+                showToast("Payment already in progress, please wait...", true);
+                return;
+            }
+            if (isConnected) {
+                showToast("You are already connected to WiFi! Enjoy browsing.", false);
+                return;
+            }
+
+            // operator validation
+            if (!selectedOperator) {
+                showToast("Please select Airtel Money or MTN Mobile Money", true);
+                return;
+            }
+
+            // phone validation
+            const rawPhone = mobileInput.value;
+            if (!rawPhone) {
+                showToast("Enter your mobile money number", true);
+                return;
+            }
+            const validPhone = validatePhone(rawPhone);
+            if (!validPhone) {
+                showToast("Invalid number. Use format 7XXXXXXXX (9 digits)", true);
+                return;
+            }
+
+            const plan = getCurrentPlan();
+            const operatorName = selectedOperator === 'airtel' ? 'Airtel Money' : 'MTN Mobile Money';
+            const amount = plan.price;
+            const currency = "UGX";
+
+            paymentInProgress = true;
+            payBtn.disabled = true;
+            payBtn.style.opacity = "0.7";
+            payBtn.innerHTML = `<i class="fas fa-spinner fa-pulse"></i> Processing Payment...`;
+
+            // Simulate payment approval (Airtel/MTN API mock)
+            showToast(`Initiating ${operatorName} payment of ${currency} ${amount.toLocaleString()}...`, false);
+
+            // payment simulation (success always for demo, but realistic timeout)
+            setTimeout(async () => {
+                // payment success (auto approval)
+                showToast(`✅ Payment approved! ${operatorName} transaction completed. Activating WiFi...`, false);
+                
+                // now automatically connect to WiFi after payment approval
+                await activateWiFiConnection(plan.name, operatorName, validPhone);
+                
+                // final success message
+                showToast(`🎉 WiFi is now ACTIVE! Plan: ${plan.name} (${plan.data})`, false);
+                
+                // reset payment flag
+                paymentInProgress = false;
+                payBtn.disabled = false;
+                payBtn.style.opacity = "1";
+                payBtn.innerHTML = `<i class="fas fa-bolt"></i> Pay & Auto-Connect WiFi <i class="fas fa-wifi"></i>`;
+                
+                // optional: update something else
+                const footerNote = document.querySelector('.footer-note');
+                if(footerNote) footerNote.style.background = "#e1f7ed";
+                setTimeout(() => { if(footerNote) footerNote.style.background = "#f3f9fe"; }, 2000);
+                
+            }, 1800);
+        }
+
+        // ----- Render UI and bindings -----
+        function renderPlans() {
+            planGrid.innerHTML = '';
+            plans.forEach(plan => {
+                const planDiv = document.createElement('div');
+                planDiv.className = `plan-item ${selectedPlanId === plan.id ? 'selected' : ''}`;
+                planDiv.setAttribute('data-plan', plan.id);
+                planDiv.innerHTML = `
+                    <div class="plan-price">${plan.price.toLocaleString()} UGX</div>
+                    <div class="plan-name">${plan.name} · ${plan.data}</div>
+                `;
+                planDiv.addEventListener('click', () => {
+                    if (paymentInProgress) {
+                        showToast("Please wait, transaction ongoing", true);
+                        return;
+                    }
+                    if (isConnected) {
+                        showToast("Already connected! Enjoy your WiFi", false);
+                        return;
+                    }
+                    selectedPlanId = plan.id;
+                    renderPlans();
+                });
+                planGrid.appendChild(planDiv);
+            });
+        }
+
+        function updateOperatorSelection() {
+            if (selectedOperator === 'airtel') {
+                airtelOp.classList.add('selected');
+                mtnOp.classList.remove('selected');
+            } else if (selectedOperator === 'mtn') {
+                mtnOp.classList.add('selected');
+                airtelOp.classList.remove('selected');
+            } else {
+                airtelOp.classList.remove('selected');
+                mtnOp.classList.remove('selected');
+            }
+        }
+
+        function bindOperators() {
+            airtelOp.addEventListener('click', () => {
+                if (paymentInProgress) { showToast("Transaction in progress", true); return; }
+                if (isConnected) { showToast("WiFi already active", false); return; }
+                selectedOperator = 'airtel';
+                updateOperatorSelection();
+            });
+            mtnOp.addEventListener('click', () => {
+                if (paymentInProgress) { showToast("Transaction in progress", true); return; }
+                if (isConnected) { showToast("WiFi already active", false); return; }
+                selectedOperator = 'mtn';
+                updateOperatorSelection();
+            });
+        }
+
+        // limit phone input to digits
+        function initPhoneInput() {
+            mobileInput.addEventListener('input', (e) => {
+                let val = e.target.value.replace(/\D/g, '');
+                if (val.length > 9) val = val.slice(0,9);
+                e.target.value = val;
+            });
+        }
+
+        // reset connection UI if needed on start
+        function resetConnection() {
+            isConnected = false;
+            updateConnectionUI(false);
+        }
+
+        // main init
+        function init() {
+            renderPlans();
+            bindOperators();
+            initPhoneInput();
+            resetConnection();
+            // default operator none (to force selection but we pre-select Airtel for UX)
+            selectedOperator = 'airtel';
+            updateOperatorSelection();
+            // default test number prefilled
+            mobileInput.value = "771234567";
+            // attach pay event
+            payBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                if (isConnected) {
+                    showToast("WiFi already connected! You're online.", false);
+                    return;
+                }
+                handlePaymentAndConnect();
+            });
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
