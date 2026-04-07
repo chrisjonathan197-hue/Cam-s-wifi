@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Airtel & MTN | Mobile Pay for WiFi</title>
+    <!-- Google Fonts + simple reset & modern feel -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300;14..32,400;14..32,500;14..32,600;14..32,700&display=swap" rel="stylesheet">
+    <!-- Font Awesome 6 (free) for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(145deg, #eef2f9 0%, #e0e7f0 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+        }
+
+        /* main card container */
+        .payment-container {
+            max-width: 560px;
+            width: 100%;
+            background: #ffffff;
+            border-radius: 2rem;
+            box-shadow: 0 25px 45px -12px rgba(0, 0, 0, 0.25), 0 4px 12px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+        }
+
+        .payment-container:hover {
+            transform: scale(1.01);
+        }
+
+        /* header with wifi & mobile money theme */
+        .hero-header {
+            background: linear-gradient(135deg, #0F2B3D 0%, #1A4A6F 100%);
+            padding: 1.8rem 2rem;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-header i {
+            font-size: 2.8rem;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.7rem;
+            border-radius: 60px;
+            margin-bottom: 0.8rem;
+            display: inline-block;
+        }
+
+        .hero-header h1 {
+            font-weight: 700;
+            font-size: 1.8rem;
+            letter-spacing: -0.3px;
+            margin-bottom: 0.4rem;
+        }
+
+        .hero-header p {
+            font-weight: 400;
+            font-size: 0.95rem;
+            opacity: 0.85;
+        }
+
+        /* main content */
+        .pay-body {
+            padding: 2rem 1.8rem 2rem 1.8rem;
+        }
+
+        /* wifi plan selector */
+        .plan-section {
+            margin-bottom: 2rem;
+        }
+
+        .section-label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: #2c3e4e;
+            margin-bottom: 12px;
+            letter-spacing: -0.2px;
+        }
+
+        .section-label i {
+            font-size: 1rem;
+            color: #1E6F5C;
+        }
+
+        .plan-cards {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .plan-option {
+            flex: 1;
+            background: #f8fafc;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 1.2rem;
+            padding: 0.9rem 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .plan-option.selected {
+            background: #eef6fc;
+            border-color: #1E6F5C;
+            box-shadow: 0 4px 12px rgba(30, 111, 92, 0.15);
+        }
+
+        .plan-option .price {
+            font-weight: 800;
+            font-size: 1.4rem;
+            color: #0F2B3D;
+        }
+
+        .plan-option .plan-name {
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #4b6b7f;
+            margin-top: 4px;
+        }
+
+        .plan-option.selected .price {
+            color: #1E6F5C;
+        }
+
+        /* mobile money operators (Airtel & MTN) */
+        .operator-section {
+            margin-bottom: 2rem;
+        }
+
+        .operator-buttons {
+            display: flex;
+            gap: 1.2rem;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+
+        .operator-card {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            background: #f9fafb;
+            border: 2px solid #e9edf2;
+            border-radius: 1.2rem;
+            padding: 0.9rem 0.5rem;
+            font-weight: 700;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .operator-card i {
+            font-size: 1.8rem;
+        }
+
+        .operator-card span {
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .operator-card.selected {
+            border-color: #F5A623;
+            background: #FFF9EF;
+            box-shadow: 0 4px 12px rgba(245, 166, 35, 0.15);
+        }
+
+        /* specific airtel red tone, mtn yellow accent */
+        .operator-card[data-op="airtel"].selected {
+            border-color: #E30A17;
+            background: #fff3f3;
+        }
+
+        .operator-card[data-op="mtn"].selected {
+            border-color: #FFC107;
+            background: #FFF9E6;
+        }
+
+        /* phone number input */
+        .phone-section {
+            margin-bottom: 2rem;
+        }
+
+        .input-group {
+            display: flex;
+            align-items: center;
+            background: #f2f5f9;
+            border-radius: 1.2rem;
+            border: 1px solid #e2e8f0;
+            transition: all 0.2s;
+            padding: 0.2rem 0.2rem 0.2rem 1rem;
+        }
+
+        .input-group:focus-within {
+            border-color: #1E6F5C;
+            box-shadow: 0 0 0 3px rgba(30, 111, 92, 0.2);
+            background: white;
+        }
+
+        .country-code {
+            font-weight: 600;
+            color: #1f3b4a;
+            background: #eef2f6;
+            padding: 0.5rem 0.8rem;
+            border-radius: 2rem;
+            font-size: 0.9rem;
+        }
+
+        .input-group input {
+            flex: 1;
+            border: none;
+            background: transparent;
+            padding: 1rem 0.8rem;
+            font-size: 1rem;
+            font-weight: 500;
+            font-family: 'Inter', monospace;
+            outline: none;
+        }
+
+        .input-group input::placeholder {
+            color: #9aaeb9;
+            font-weight: 400;
+        }
+
+        .help-note {
+            font-size: 0.7rem;
+            color: #6c8a9c;
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* pay button */
+        .pay-action {
+            margin-top: 1.8rem;
+        }
+
+        .pay-btn {
+            width: 100%;
+            background: linear-gradient(95deg, #0F2B3D 0%, #1A5F7A 100%);
+            border: none;
+            padding: 1rem;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: white;
+            border-radius: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.1);
+        }
+
+        .pay-btn i {
+            font-size: 1.2rem;
+        }
+
+        .pay-btn:hover {
+            background: linear-gradient(95deg, #0a1f2c 0%, #124a60 100%);
+            transform: translateY(-2px);
+        }
+
+        .pay-btn:active {
+            transform: translateY(1px);
+        }
+
+        /* toast notification */
+        .toast-msg {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) scale(0.9);
+            background: #1e2f3c;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 60px;
+            font-weight: 500;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.2s ease;
+            backdrop-filter: blur(4px);
+            background: rgba(0, 0, 0, 0.85);
+        }
+
+        .toast-msg.show {
+            opacity: 1;
+            visibility: visible;
+            transform: translateX(-50%) scale(1);
+        }
+
+        .toast-msg i {
+            font-size: 1.2rem;
+        }
+
+        /* footer */
+        .secure-footer {
+            background: #fafcff;
+            padding: 1rem 1.8rem 1.4rem;
+            text-align: center;
+            border-top: 1px solid #eef2f8;
+            font-size: 0.7rem;
+            color: #6f8ea3;
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .secure-footer i {
+            margin-right: 5px;
+        }
+
+        @media (max-width: 480px) {
+            .pay-body {
+                padding: 1.5rem;
+            }
+            .operator-card span {
+                font-size: 0.9rem;
+            }
+            .plan-cards {
+                gap: 8px;
+            }
+            .hero-header h1 {
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="payment-container">
+    <div class="hero-header">
+        <i class="fas fa-wifi"></i>
+        <h1>WiFi FastPay</h1>
+        <p>Instant internet · Pay with Airtel Money or MTN Mobile Money</p>
+    </div>
+
+    <div class="pay-body">
+        <!-- WiFi Plan Selection -->
+        <div class="plan-section">
+            <div class="section-label">
+                <i class="fas fa-tachometer-alt"></i>
+                <span>Choose your WiFi plan</span>
+            </div>
+            <div class="plan-cards" id="planCardsContainer">
+                <!-- plans injected via js but also static fallback: we manage with data -->
+            </div>
+        </div>
+
+        <!-- Mobile Operator: Airtel & MTN -->
+        <div class="operator-section">
+            <div class="section-label">
+                <i class="fas fa-mobile-alt"></i>
+                <span>Select mobile money operator</span>
+            </div>
+            <div class="operator-buttons" id="operatorContainer">
+                <div class="operator-card" data-op="airtel" id="airtelCard">
+                    <i class="fas fa-circle" style="color: #E30A17;"></i>
+                    <span>Airtel Money</span>
+                </div>
+                <div class="operator-card" data-op="mtn" id="mtnCard">
+                    <i class="fas fa-circle" style="color: #FFC107;"></i>
+                    <span>MTN MoMo</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Phone Number Input -->
+        <div class="phone-section">
+            <div class="section-label">
+                <i class="fas fa-phone-alt"></i>
+                <span>Mobile money number</span>
+            </div>
+            <div class="input-group">
+                <span class="country-code">+256</span>
+                <input type="tel" id="phoneNumber" placeholder="7X XXX XXXX" autocomplete="off" value="">
+            </div>
+            <div class="help-note">
+                <i class="fas fa-info-circle"></i>
+                <span>Enter the number registered with your mobile money account</span>
+            </div>
+        </div>
+
+        <!-- Pay Button -->
+        <div class="pay-action">
+            <button class="pay-btn" id="payNowBtn">
+                <i class="fas fa-bolt"></i> 
+                <span>Pay for WiFi Now</span>
+                <i class="fas fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <div class="secure-footer">
+        <span><i class="fas fa-lock"></i> SSL Secure</span>
+        <span><i class="fas fa-clock"></i> Instant activation</span>
+        <span><i class="fas fa-check-circle"></i> Airtel & MTN approved</span>
+    </div>
+</div>
+
+<!-- Toast notification -->
+<div id="toastMessage" class="toast-msg">
+    <i class="fas fa-circle-info"></i>
+    <span id="toastText">Processing payment ...</span>
+</div>
+
+<script>
+    (function() {
+        // --- WiFi Plans data ---
+        const plans = [
+            { id: 'daily', name: 'Daily Boost', price: 2500, currency: 'UGX', data: '3GB · 24h' },
+            { id: 'weekly', name: 'Weekly Surfer', price: 10000, currency: 'UGX', data: '15GB · 7d' },
+            { id: 'monthly', name: 'Monthly Pro', price: 35000, currency: 'UGX', data: 'Unlimited · 30d' }
+        ];
+
+        // State
+        let selectedPlanId = 'daily';     // default daily
+        let selectedOperator = null;       // 'airtel' or 'mtn'
+        let phoneNumber = '';
+
+        // DOM elements
+        const planContainer = document.getElementById('planCardsContainer');
+        const airtelCard = document.getElementById('airtelCard');
+        const mtnCard = document.getElementById('mtnCard');
+        const phoneInput = document.getElementById('phoneNumber');
+        const payBtn = document.getElementById('payNowBtn');
+        const toastEl = document.getElementById('toastMessage');
+        const toastTextSpan = document.getElementById('toastText');
+
+        // Helper: show toast message
+        function showToast(message, isError = false) {
+            toastTextSpan.innerText = message;
+            toastEl.classList.add('show');
+            // change icon style based on error/success? simple approach
+            const iconElem = toastEl.querySelector('i');
+            if (isError) {
+                iconElem.className = 'fas fa-exclamation-triangle';
+                toastEl.style.background = "rgba(180, 40, 40, 0.92)";
+            } else {
+                iconElem.className = 'fas fa-check-circle';
+                toastEl.style.background = "rgba(0, 0, 0, 0.85)";
+            }
+            setTimeout(() => {
+                toastEl.classList.remove('show');
+                // reset icon after hide
+                setTimeout(() => {
+                    if (!toastEl.classList.contains('show')) {
+                        iconElem.className = 'fas fa-circle-info';
+                        toastEl.style.background = "rgba(0, 0, 0, 0.85)";
+                    }
+                }, 200);
+            }, 3500);
+        }
+
+        // Render plan cards
+        function renderPlans() {
+            if (!planContainer) return;
+            planContainer.innerHTML = '';
+            plans.forEach(plan => {
+                const planDiv = document.createElement('div');
+                planDiv.className = `plan-option ${selectedPlanId === plan.id ? 'selected' : ''}`;
+                planDiv.setAttribute('data-plan-id', plan.id);
+                planDiv.innerHTML = `
+                    <div class="price">${plan.currency} ${plan.price.toLocaleString()}</div>
+                    <div class="plan-name">${plan.name} · ${plan.data}</div>
+                `;
+                planDiv.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    selectedPlanId = plan.id;
+                    renderPlans();  // re-render to update selected UI
+                });
+                planContainer.appendChild(planDiv);
+            });
+        }
+
+        // Update operator UI selection
+        function updateOperatorUI() {
+            if (selectedOperator === 'airtel') {
+                airtelCard.classList.add('selected');
+                mtnCard.classList.remove('selected');
+            } else if (selectedOperator === 'mtn') {
+                mtnCard.classList.add('selected');
+                airtelCard.classList.remove('selected');
+            } else {
+                airtelCard.classList.remove('selected');
+                mtnCard.classList.remove('selected');
+            }
+        }
+
+        // Attach operator listeners
+        function bindOperatorEvents() {
+            airtelCard.addEventListener('click', () => {
+                selectedOperator = 'airtel';
+                updateOperatorUI();
+            });
+            mtnCard.addEventListener('click', () => {
+                selectedOperator = 'mtn';
+                updateOperatorUI();
+            });
+        }
+
+        // Validate phone number (basic Uganda format: starting with 7, 0, or just digits after +256 prefix)
+        // In UI we show +256 prefix, but user can enter 7XXXXXXXX or 07XXXXXXXX. We'll clean.
+        function validateAndFormatPhone(rawNumber) {
+            let cleaned = rawNumber.trim();
+            // remove any spaces or dashes
+            cleaned = cleaned.replace(/\s+/g, '').replace(/-/g, '');
+            // if starts with 0, remove leading zero
+            if (cleaned.startsWith('0')) {
+                cleaned = cleaned.substring(1);
+            }
+            // now we expect a number that is either 9 digits (starting with 7) or 12 digits with +256? but we have prefix +256 fixed visual
+            // but user might have typed full number including 256. Since we display country code separately, user should type 7XXXXXXXX (9 digits) or 70xxxxxxx etc.
+            // additional robustness: accept numbers that already contain 256 prefix (then remove it)
+            if (cleaned.startsWith('256')) {
+                cleaned = cleaned.substring(3);
+            }
+            // must be 9 digits and start with 7 (typical UG mobile)
+            const phoneRegex = /^[7][0-9]{8}$/;
+            if (phoneRegex.test(cleaned)) {
+                return cleaned;
+            }
+            // also allow starting with 70, 71, 77, 78, 75 etc. already pattern: first digit 7 and total 9 digits.
+            if (/^7\d{8}$/.test(cleaned)) {
+                return cleaned;
+            }
+            return null; // invalid
+        }
+
+        // get selected plan object
+        function getSelectedPlan() {
+            return plans.find(p => p.id === selectedPlanId) || plans[0];
+        }
+
+        // handle payment logic
+        function processPayment() {
+            // 1. operator selection
+            if (!selectedOperator) {
+                showToast("Please select Airtel Money or MTN Mobile Money", true);
+                return;
+            }
+
+            // 2. phone number validation
+            const rawPhone = phoneInput.value;
+            if (!rawPhone) {
+                showToast("Enter your mobile money phone number", true);
+                return;
+            }
+            const formattedPhone = validateAndFormatPhone(rawPhone);
+            if (!formattedPhone) {
+                showToast("Invalid number. Use format 7XXXXXXXX (9 digits)", true);
+                return;
+            }
+
+            const selectedPlan = getSelectedPlan();
+            const operatorName = selectedOperator === 'airtel' ? 'Airtel Money' : 'MTN Mobile Money';
+            const amount = selectedPlan.price;
+            const currency = selectedPlan.currency;
+
+            // Simulate payment request / API integration (mock success)
+            // Show processing toast
+            showToast(`Processing ${operatorName} payment of ${currency} ${amount.toLocaleString()}...`, false);
+            
+            // Simulate async request (like calling mobile money gateway)
+            setTimeout(() => {
+                // success scenario: in real world, after successful payment we would activate WiFi
+                const successMsg = `✅ WiFi payment successful! ${selectedPlan.name} activated. Receipt sent to +256${formattedPhone}.`;
+                showToast(successMsg, false);
+                // additional small console log for demo
+                console.log(`[Payment Mock] Operator: ${operatorName}, Phone: +256${formattedPhone}, Plan: ${selectedPlan.name}, Amount: ${currency} ${amount}`);
+                
+                // Optionally reset phone? not needed, but show nice effect.
+                // You can also highlight success
+                payBtn.innerHTML = `<i class="fas fa-check-circle"></i> Paid! WiFi Active <i class="fas fa-wifi"></i>`;
+                setTimeout(() => {
+                    payBtn.innerHTML = `<i class="fas fa-bolt"></i> <span>Pay for WiFi Now</span> <i class="fas fa-arrow-right"></i>`;
+                }, 3000);
+            }, 1500);
+        }
+
+        // also reset pay button if needed
+        function initEventListeners() {
+            payBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                processPayment();
+            });
+            // optional live phone number trimming
+            phoneInput.addEventListener('input', (e) => {
+                // just store value, but we can format as user types: allow digits only?
+                let val = e.target.value.replace(/[^0-9]/g, '');
+                if (val.length > 9) val = val.slice(0,9);
+                e.target.value = val;
+            });
+        }
+
+        // additional initial state: default selected operator? maybe none, but we could pre-select airtel for better UX.
+        // Better to start with none to require user selection. but we can pre-select airtel as convenience.
+        // However to match both we keep neutral. We'll set selectedOperator = null, but might set default 'airtel' for better flow
+        // many users expect. Let's set default to 'airtel' so the UI shows ready, but they can change.
+        selectedOperator = 'airtel';
+        
+        // final initialization
+        function init() {
+            renderPlans();
+            bindOperatorEvents();
+            initEventListeners();
+            updateOperatorUI();    // show airtel selected by default
+            // set sample placeholder hint
+            phoneInput.placeholder = "7X XXX XXXX";
+            // optional default example for demo clarity
+            phoneInput.value = "770123456";
+            // small visual: remove default value after focus? keep for test convenience but user can edit.
+            // set focus effect without clearing automatically but it's fine.
+        }
+
+        init();
+    })();
+</script>
+</body>
+</html>
